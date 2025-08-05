@@ -8,7 +8,7 @@ public class TaskServiceImpl {
     }
 
     public int addTask(String requirementName, String assignee, String reviewer,
-                       String taskTypeID, String date, String planFrom, String planTo) throws Exception {
+                       String taskTypeID, String date, String planFrom, String planTo) {
         int typeId = Integer.parseInt(taskTypeID);
         double from = Double.parseDouble(planFrom);
         double to = Double.parseDouble(planTo);
@@ -19,11 +19,16 @@ public class TaskServiceImpl {
         return task.getId();
     }
 
-    public void deleteTask(String idStr) throws Exception {
-        int id = Integer.parseInt(idStr);
-        Task found = findById(id);
-        if (found == null) throw new Exception("Task ID not found: " + id);
-        taskList.remove(found);
+    public void deleteTask(String idStr)  {
+        try{
+            int id = Integer.parseInt(idStr);
+            Task found = findById(id);
+            if (found == null) throw new Exception("Task ID not found: " + id);
+            taskList.remove(found);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
     }
 
     public Task findById(int id) {

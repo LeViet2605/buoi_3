@@ -28,10 +28,15 @@ public class Task {
         return id;
     }
 
-    public static Date parseDate(String dateStr) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        sdf.setLenient(false);
-        return sdf.parse(dateStr);
+    public static Date parseDate(String dateStr)  {
+        try{
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            sdf.setLenient(false);
+            return sdf.parse(dateStr);
+        }catch (ParseException e){
+            throw new RuntimeException(e);
+        }
+
     }
 
     public String toRowString() {

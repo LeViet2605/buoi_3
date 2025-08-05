@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.util.Date;
 
 public class TaskManager {
     public static void main(String[] args) {
@@ -22,50 +21,54 @@ public class TaskManager {
                 continue;
             }
 
-            try {
-                switch (option) {
-                    case 1 -> {
-                        String requirementName = inputRequirementName(sc);
-                        int typeId = inputTaskTypeId(sc);
-                        String dateStr = inputDate(sc);
-                        double[] times = inputPlanTimes(sc);
-                        double from = times[0];
-                        double to = times[1];
+            switch (option) {
+                case 1 -> {
+                    String requirementName = inputRequirementName(sc);
+                    int typeId = inputTaskTypeId(sc);
+                    String dateStr = inputDate(sc);
 
-                        System.out.print("Assignee: ");
-                        String assignee = sc.nextLine();
-
-                        System.out.print("Reviewer: ");
-                        String reviewer = sc.nextLine();
-
-                        int id = service.addTask(requirementName, assignee, reviewer,
-                                String.valueOf(typeId), dateStr, String.valueOf(from), String.valueOf(to));
-                        System.out.println("=> Add task with ID: " + id);
-                    }
-
-                    case 2 -> {
-                        System.out.print("Enter the ID to delete: ");
-                        String idStr = sc.nextLine();
-                        service.deleteTask(idStr);
-                        System.out.println("=> Deleted successfully!");
-                    }
-
-                    case 3 -> {
-                        System.out.println("ID   Requirement     Type       Date         Time       Assignee   Reviewer");
-                        for (Task t : service.getDataTasks()) {
-                            System.out.println(t.toRowString());
+                    double from, to;
+                    while (true) {
+                        try {
+                            System.out.print("From (8.0 - 17.0): ");
+                            from = inputDouble(sc);
+                            System.out.print("To (8.5 - 17.5): ");
+                            to = inputDouble(sc);
+                            TaskValidator.validateTime(from, to);
+                            break;
+                        } catch (Exception e) {
+                            System.out.println("❌ " + e.getMessage());
                         }
                     }
 
-                    case 4 -> {
-                        System.out.println("Exit program.");
-                        return;
-                    }
+                    String assignee = inputName(sc, "Assignee");
+                    String reviewer = inputName(sc, "Reviewer");
 
-                    default -> System.out.println("Wrong selection! Please select 1-4.");
+                    int id = service.addTask(requirementName, assignee, reviewer,
+                            String.valueOf(typeId), dateStr, String.valueOf(from), String.valueOf(to));
+                    System.out.println("=> Add task with ID: " + id);
                 }
-            } catch (Exception e) {
-                System.err.println("Error: " + e.getMessage());
+
+                case 2 -> {
+                    System.out.print("Enter the ID to delete: ");
+                    String idStr = sc.nextLine();
+                    service.deleteTask(idStr);
+                    System.out.println("=> Deleted successfully!");
+                }
+
+                case 3 -> {
+                    System.out.println("ID   Requirement     Type       Date         Time       Assignee   Reviewer");
+                    for (Task t : service.getDataTasks()) {
+                        System.out.println(t.toRowString());
+                    }
+                }
+
+                case 4 -> {
+                    System.out.println("Exit program.");
+                    return;
+                }
+
+                default -> System.out.println("Wrong selection! Please select 1-4.");
             }
         }
     }
@@ -115,21 +118,30 @@ public class TaskManager {
         }
     }
 
-    // ✅ Hàm nhập thời gian from - to
-    private static double[] inputPlanTimes(Scanner sc) {
-        double from, to;
+    // ✅ Hàm nhập số thực
+    private static Double inputDouble(Scanner sc) {
         while (true) {
             try {
-                System.out.print("From (8.0 - 17.0): ");
-                from = Double.parseDouble(sc.nextLine());
-                System.out.print("To (8.5 - 17.5): ");
-                to = Double.parseDouble(sc.nextLine());
-                TaskValidator.validateTime(from, to); // kiểm tra hợp lệ
-                return new double[]{from, to};
-            } catch (NumberFormatException e) {
-                System.out.println("Real numbers must be entered. VD: 8.5");
+                System.out.print("Enter number: ");
+                return Double.parseDouble(sc.nextLine());
             } catch (Exception e) {
-                System.out.println("Lỗi giờ: " + e.getMessage());
+                System.out.println("Real numbers must be entered. VD: 8.5");
+            }
+        }
+    }
+
+    // ✅ Hàm nhập Assignee / Reviewer (phải chứa chữ)
+    private static String inputName(Scanner sc, String label) {
+        String name;
+        while (true) {
+            System.out.print(label + ": ");
+            name = sc.nextLine().trim();
+            if (name.isEmpty()) {
+                System.out.println(label + " không được để trống!");
+            } else if (!name.matches(".*[a-zA-Z].*")) {
+                System.out.println(label + " phải chứa ít nhất một ký tự chữ!");
+            } else {
+                return name;
             }
         }
     }
