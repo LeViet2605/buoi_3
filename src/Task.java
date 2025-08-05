@@ -30,7 +30,7 @@ public class Task {
 
     public static Date parseDate(String dateStr) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        sdf.setLenient(false); // BẮT lỗi nếu sai tháng, ngày
+        sdf.setLenient(false);
         return sdf.parse(dateStr);
     }
 
